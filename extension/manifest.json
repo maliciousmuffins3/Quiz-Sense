@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "QuizSense",
+  "version": "2.1.0",
+  "description": "An AI-powered Chrome extension that intelligently reads and interprets quiz questions—automatically selecting the most accurate answers in real-time. Designed for Moodle-based platforms, it enhances quiz-taking efficiency by leveraging natural language processing and smart automation.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "icons": {
+    "128": "images/icon.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "images/icon.png"
+    }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://bcpeducollege.elearningcommons.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

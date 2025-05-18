@@ -1,0 +1,10 @@
+# Logs
+*.log
+
+# Environment files (ignore local env files, but not templates)
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
