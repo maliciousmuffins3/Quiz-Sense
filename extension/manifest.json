@@ -5,23 +5,23 @@
   "description": "An AI-powered Chrome extension that intelligently reads and interprets quiz questions—automatically selecting the most accurate answers in real-time. Designed for Moodle-based platforms, it enhances quiz-taking efficiency by leveraging natural language processing and smart automation.",
   "permissions": ["activeTab", "scripting", "storage"],
   "icons": {
-    "128": "images/icon.png"
+    "128": "src/images/icon.png"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/popup.html",
     "default_icon": {
-      "128": "images/icon.png"
+      "128": "src/images/icon.png"
     }
   },
 
   "content_scripts": [
     {
       "matches": ["https://bcpeducollege.elearningcommons.com/*"],
-      "js": ["content.js"],
+      "js": ["dist/bundle.js"],
       "run_at": "document_end"
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js"
   }
 }
