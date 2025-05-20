@@ -13,15 +13,14 @@
       "128": "src/images/icon.png"
     }
   },
-
   "content_scripts": [
     {
       "matches": ["https://bcpeducollege.elearningcommons.com/*"],
-      "js": ["dist/bundle.js"],
+      "js": ["dist/content.bundle.js"],
       "run_at": "document_end"
     }
   ],
   "background": {
-    "service_worker": "src/background.js"
+    "service_worker": "dist/background.bundle.js"
   }
 }
