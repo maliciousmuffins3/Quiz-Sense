@@ -84,21 +84,25 @@ app.post("/filter-mcq-batch", async (req, res) => {
 
     console.log("================= Filter Request ===================");
     // Stricter prompt to enforce proper JSON format
-    const prompt = `You are a JSON generator. Your task is to extract multiple-choice questions from the input and return them in valid JSON format only.
+    const prompt = `You are a JSON parser that extracts multiple-choice questions from raw academic text.
 
-Each question should follow this schema:
+Your job is to **extract only valid MCQs** and convert them into a JSON array. Each object in the array must strictly follow this schema:
+
 {
   "question": "STRING",
-  "letters": ["a", "b", "c", "d"...],
-  "choices": ["choice A", "choice B", "choice C", "choice D"...]
+  "letters": ["a", "b", "c", "d", "..."], // dynamically generated per choice count
+  "choices": ["choice A", "choice B", "choice C", "choice D", "..."]
 }
 
-Return ONLY a valid JSON array of such objects. Do NOT include any extra explanation, markdown, or comments.
-REMEMBER just filter the text don't add anything
+Guidelines:
+- Do not skip questions unless they are clearly malformed.
+- Do not add, interpret, or infer information. Extract only what is present.
+- Remove blank or duplicate choices. Adjust the letter array accordingly.
+- Return a **single JSON array only**. No prose, markdown, comments, or extra output.
+- All fields must be strings; ensure JSON is properly escaped and parsable.
 
 Input:
-"""${rawInput}"""
-`;
+"""${rawInput}"""`;
 
     const chatCompletion = await groq.chat.completions.create({
       model: FILTER_MODEL,
