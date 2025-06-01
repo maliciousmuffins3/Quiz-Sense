@@ -1,7 +1,9 @@
 const ACTION = require("../configs/action.js");
 const { nextButton } = require("../configs/selector.js");
-const { DELAY_RANGE } = require("../configs/settings.js");
+const { DELAY_RANGE, TOGGLE, loadSettings }  = require("../configs/settings.js");
 const delay = require("../utils/delay.js");
+
+
 
 function extractInfo() {
   return new Promise((resolve) => {
@@ -172,6 +174,7 @@ async function handleIdentification() {
 
 // Asynchronous function to run the automation for identification quizzes.
 const runIdentificationAutomation = async () => {
+  loadSettings();
   console.log("%cIdentification Quiz Type Automation", "color: blue;");
   await handleIdentification();
 

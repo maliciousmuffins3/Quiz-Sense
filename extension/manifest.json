@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "QuizSense",
   "version": "2.1.0",
-  "description": "An AI-powered Chrome extension that intelligently reads and interprets quiz questions—automatically selecting the most accurate answers in real-time. Designed for Moodle-based platforms, it enhances quiz-taking efficiency by leveraging natural language processing and smart automation.",
+  "description": "AI-powered Chrome extension for answering Moodle quiz questions with natural language processing and automation.",
   "permissions": ["activeTab", "scripting", "storage"],
   "icons": {
     "128": "src/images/icon.png"

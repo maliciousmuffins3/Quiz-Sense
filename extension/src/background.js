@@ -5,7 +5,7 @@ const ACTION = {
   FILTER_TEXT: "filter_text"
 };
 
-const backendURL = "http://localhost:3000";
+const backendURL = "http://localhost:3000/gemini";
 
 chrome.runtime.onMessage.addListener((req, sender, res) => {
   if (req.action == ACTION.GET_AI_RESPONSE) {

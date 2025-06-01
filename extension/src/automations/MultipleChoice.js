@@ -1,7 +1,10 @@
 const ACTION = require("../configs/action.js");
 const { nextButton, containers } = require("../configs/selector.js");
-const { DELAY_RANGE } = require("../configs/settings.js");
+const { DELAY_RANGE, TOGGLE, loadSettings }  = require("../configs/settings.js");
 const delay = require("../utils/delay.js");
+
+
+
 
 const getContent = (Elements) => {
   const Content = {
@@ -108,6 +111,7 @@ const handleContainer = (container) => {
 
 // Asynchronous function to run the automation for multiple-choice quizzes.
 const runMultipleChoicesAutomation = async () => {
+  loadSettings();
   console.log("%cMultiple Choice Quiz Type Automation", "color: blue;");
   const promises = Array.from(containers).map(handleContainer);
   await Promise.all(promises);
