@@ -17,12 +17,12 @@ Create a file named `.env` in your project directory with:
 PORT=3000
 
 # Groq
-GROQ_API_KEY=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
+GROQ_API_KEY=your_groq_key
 MODEL=llama3-8b-8192
 FILTER_MODEL=llama3-70b-8192
 
 # Gemini
-GEMINI_API_KEY=AIzaSyCrpebpsamyfgdcw9ql1YiBK1DPl0D3EmE
+GEMINI_API_KEY=your_gemini_key
 GEMINI_MODEL=gemma-3-27b-it
 
 # ChatGPT
@@ -38,19 +38,25 @@ CHATGPT_MODEL=gpt-4
 
 ### Step 3: Start the Server
 ```bash
-node server.js
+node index.js
 ```
 You should see: `Server running at http://localhost:3000`
 
 ## Chrome Extension Installation
 
 ### Step 1: Prepare Your Extension Files
-1. Create a folder for your extension with these files:
-   - `manifest.json`
-   - `popup.html`
-   - `popup.js` 
-   - `content.js`
-   - `/images` folder with icon files
+
+This section provides installation instructions for the Quiz-Sense extension.
+It guides users to:
+1. Download the zip file from the repository.
+2. Extract the contents to a folder of their choice.
+3. Ensure the extracted folder contains the following essential files:
+   - manifest.json (the extension manifest file)
+   - popup.html
+   - popup.js
+   - content.js
+   - an /images directory with icon files
+The presence of manifest.json is required for Chrome extensions to function properly.
 
 ### Step 2: Load the Extension in Chrome
 1. Open Chrome and go to `chrome://extensions/`
