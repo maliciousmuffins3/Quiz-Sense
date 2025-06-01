@@ -8,19 +8,32 @@
 
 ### Step 1: Install Required Packages
 ```bash
-npm install express body-parser cors dotenv groq-sdk
+npm install express body-parser cors dotenv groq-sdk @google/generative-ai openai
 ```
 
 ### Step 2: Create .env File
 Create a file named `.env` in your project directory with:
 ```
-GROQ_API_KEY=your_groq_api_key_here
 PORT=3000
-MODEL=llama3-70b-8192
-MAX_TOKENS=1024
-TEMPERATURE=1
-TOP_P=1
+
+# Groq
+GROQ_API_KEY=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
+MODEL=llama3-8b-8192
 FILTER_MODEL=llama3-70b-8192
+
+# Gemini
+GEMINI_API_KEY=AIzaSyCrpebpsamyfgdcw9ql1YiBK1DPl0D3EmE
+GEMINI_MODEL=gemma-3-27b-it
+
+# ChatGPT
+OPENAI_API_KEY=your_openai_key
+CHATGPT_MODEL=gpt-4
+
+# # Optional Shared Config
+# MAX_TOKENS=1024
+# TEMPERATURE=0.2
+# TOP_P=0.9
+
 ```
 
 ### Step 3: Start the Server
