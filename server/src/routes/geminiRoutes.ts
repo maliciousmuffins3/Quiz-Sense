@@ -1,41 +1,34 @@
-const express = require("express");
-const model = require("../services/geminiClient");
+import express, { Request, Response } from "express";
+import model from "../services/geminiClient.js"; // Make sure this default export is TS-compatible
 
 const router = express.Router();
 
 /**
- * Utility: Strip Markdown triple backtick formatting
+ * Utility: Strip Markdown triple backtick formatting and parse JSON
  */
-function extractJSON(text) {
+function extractJSON(text: string): any {
   try {
-    // Remove code block wrappers like ```json ... ```
     const stripped = text.replace(/```json|```/g, "").trim();
 
-    // Try naive parse first
     try {
       return JSON.parse(stripped);
     } catch {
-      // Fallback: Try to find first JSON object in the text
       const match = stripped.match(/\{[\s\S]*?\}/);
-      if (match) {
-        return JSON.parse(match[0]);
-      }
+      if (match) return JSON.parse(match[0]);
 
       const arrayMatch = stripped.match(/\[[\s\S]*?\]/);
-      if (arrayMatch) {
-        return JSON.parse(arrayMatch[0]);
-      }
+      if (arrayMatch) return JSON.parse(arrayMatch[0]);
     }
 
     throw new Error("No valid JSON object found.");
-  } catch (err) {
+  } catch (err: any) {
     console.error("JSON parsing failed:", err.message);
     throw new Error("Gemini returned invalid or malformed JSON");
   }
 }
 
-
-router.post("/evaluate-mcq", async (req, res) => {
+// POST /gemini/evaluate-mcq
+router.post("/evaluate-mcq", async (req: Request, res: Response) => {
   try {
     const userInput = JSON.stringify(req.body, null, 2);
     const prompt = `You are an AI API that answers MCQs in this strict format only:
@@ -53,16 +46,19 @@ Only output strict JSON without markdown code blocks, explanations, or extra tex
 
     const parsed = extractJSON(text);
     res.json(parsed);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini Error:", error.message || error);
     res.status(500).json({ error: "Gemini failed to evaluate MCQ" });
   }
 });
 
-router.post("/filter-mcq-batch", async (req, res) => {
+// POST /gemini/filter-mcq-batch
+router.post("/filter-mcq-batch", async (req: Request, res: Response) => {
   try {
-    const rawInput = req.body.rawText;
-    if (!rawInput) return res.status(400).json({ error: "Missing rawText" });
+    const rawInput: string = req.body.rawText;
+    if (!rawInput) {
+      return res.status(400).json({ error: "Missing rawText" });
+    }
 
     const prompt = `Extract MCQs from the raw text below and return a JSON array. Format:
 
@@ -78,17 +74,19 @@ Text:
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
-    const parsed = extractJSON(text).map((item) => {
-      const nonEmpty = (item.choices || []).filter(c => c && c.trim());
-      const letters = Array.from({ length: nonEmpty.length }, (_, i) => String.fromCharCode(97 + i));
+    const parsed = (extractJSON(text) as any[]).map((item) => {
+      const nonEmpty = (item.choices || []).filter((c: string) => c && c.trim());
+      const letters = Array.from({ length: nonEmpty.length }, (_, i) =>
+        String.fromCharCode(97 + i)
+      );
       return { ...item, choices: nonEmpty, letters };
     });
 
     res.json(parsed);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini Filter Error:", error.message || error);
     res.status(500).json({ error: "Gemini failed to filter MCQs" });
   }
 });
 
-module.exports = router;
+export default router;

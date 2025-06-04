@@ -1,15 +1,32 @@
-const express = require("express");
-const groq = require("../services/groqClient");
+import express, { Request, Response } from "express";
+import groq from "../services/groqClient.js"; // You may need to add type support for this client
 
 const router = express.Router();
 
-const MODEL = process.env.MODEL;
-const MAX_TOKENS = parseInt(process.env.MAX_TOKENS) || 1024;
-const TEMPERATURE = parseFloat(process.env.TEMPERATURE) || 0.2;
-const TOP_P = parseFloat(process.env.TOP_P) || 0.9;
+const MODEL = process.env.MODEL!;
+const MAX_TOKENS = parseInt(process.env.MAX_TOKENS || "1024", 10);
+const TEMPERATURE = parseFloat(process.env.TEMPERATURE || "0.2");
+const TOP_P = parseFloat(process.env.TOP_P || "0.9");
 const FILTER_MODEL = process.env.FILTER_MODEL || "llama3-70b-8192";
 
-router.post("/evaluate-mcq", async (req, res) => {
+interface McqRequest {
+  question: string;
+  choices: string[];
+  letters: string[];
+}
+
+interface McqResponse {
+  correct_letter: string;
+  correct_choice: string;
+}
+
+interface McqBatchItem {
+  question: string;
+  choices: string[];
+  letters?: string[];
+}
+
+router.post("/evaluate-mcq", async (req: Request, res: Response) => {
   try {
     const userInput = JSON.stringify(req.body, null, 2);
 
@@ -21,11 +38,13 @@ router.post("/evaluate-mcq", async (req, res) => {
         },
         {
           role: "user",
-          content: '{ "question": "What does HTML stand for?", "choices": [...], "letters": [...] }',
+          content:
+            '{ "question": "What does HTML stand for?", "choices": [...], "letters": [...] }',
         },
         {
           role: "assistant",
-          content: '{ "correct_letter": "b", "correct_choice": "Hyper Text Markup Language" }',
+          content:
+            '{ "correct_letter": "b", "correct_choice": "Hyper Text Markup Language" }',
         },
         {
           role: "user",
@@ -40,18 +59,20 @@ router.post("/evaluate-mcq", async (req, res) => {
     });
 
     const resultText = chatCompletion.choices[0].message.content;
-    const parsed = JSON.parse(resultText);
+    const parsed: McqResponse = JSON.parse(resultText);
     res.json(parsed);
-  } catch (error) {
+  } catch (error: any) {
     console.error("GROQ Error:", error.message || error);
     res.status(500).json({ error: "GROQ failed to evaluate MCQ" });
   }
 });
 
-router.post("/filter-mcq-batch", async (req, res) => {
+router.post("/filter-mcq-batch", async (req: Request, res: Response) => {
   try {
-    const rawInput = req.body.rawText;
-    if (!rawInput) return res.status(400).json({ error: "Missing rawText" });
+    const rawInput: string = req.body.rawText;
+    if (!rawInput) {
+      return res.status(400).json({ error: "Missing rawText" });
+    }
 
     const prompt = `You are a JSON parser...`;
 
@@ -67,19 +88,22 @@ router.post("/filter-mcq-batch", async (req, res) => {
     });
 
     const responseText = chatCompletion.choices[0].message.content;
-    const parsed = JSON.parse(responseText);
+    const parsed: McqBatchItem[] = JSON.parse(responseText);
 
     const cleaned = parsed.map((item) => {
-      const nonEmpty = (item.choices || []).filter(c => c && c.trim());
-      const letters = Array.from({ length: nonEmpty.length }, (_, i) => String.fromCharCode(97 + i));
+      const nonEmpty = (item.choices || []).filter((c) => c && c.trim());
+      const letters = Array.from(
+        { length: nonEmpty.length },
+        (_, i) => String.fromCharCode(97 + i) // 'a', 'b', 'c', ...
+      );
       return { ...item, choices: nonEmpty, letters };
     });
 
     res.json(cleaned);
-  } catch (error) {
+  } catch (error: any) {
     console.error("GROQ Filter Error:", error.message || error);
     res.status(500).json({ error: "GROQ failed to filter MCQs" });
   }
 });
 
-module.exports = router;
+export default router;
